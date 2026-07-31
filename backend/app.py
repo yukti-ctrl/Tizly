@@ -1,10 +1,12 @@
 from flask import Flask
 from config import Config
 from extensions import db, cors
+from routes.product_routes import product_bp
 
 def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
+    app.register_blueprint(product_bp, url_prefix='/products')
 
     # Initialize Extensions
     db.init_app(app)
