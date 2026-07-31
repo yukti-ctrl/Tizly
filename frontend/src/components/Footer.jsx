@@ -45,14 +45,14 @@ export default function Footer() {
         </div>
       </div>
 
-      <hr style={styles.divider} />
+      {/*<hr style={styles.divider} /> */}
 
     </footer>
   );
 }
 
 const styles = {
-  footerContainer: { padding: '60px 8% 40px 8%', backgroundColor: '#fff', borderTop: '1px solid #eee', marginTop: '50px' },
+  footerContainer: { padding: '30px 8% 10px 8%', backgroundColor: '#fff', borderTop: '1px solid #eee', marginTop: '50px' },
   topSection: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px', flexWrap: 'wrap', gap: '20px' },
   logo: { fontSize: '24px', fontWeight: '800' },
   navLinks: { display: 'flex', gap: '30px', fontWeight: '600', fontSize: '14px' },
