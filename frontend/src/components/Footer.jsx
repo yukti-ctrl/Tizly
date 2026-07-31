@@ -22,13 +22,20 @@ export default function Footer() {
       <div style={styles.topSection}>
         <div style={styles.logo}>Tizly</div>
         
-        <div style={styles.navLinks}>
-          <Link to="/about">About</Link>
-          <Link to="/shop">Shop</Link>
-          <Link to="/community">Community</Link>
-          <Link to="/vetcare">Vetcare</Link>
-          <Link to="/contact">Support</Link>
+      <div style={styles.bottomSection}>
+        <div style={styles.legalLinks}>
+          <span>© 2026 Tizly</span>
+          <Link to="/Terms">Terms</Link>
+          <Link to="/Privacy">Privacy</Link>
+          <Link to="/Cookies">Cookies</Link>
         </div>
+        <div style={styles.extraLinks}>
+          <Link to="/Jobs">Jobs</Link>
+          {/* <Link to="/tags">Tags</Link> */}
+          {/*<Link to="/resources">Resources</Link>*/}
+        </div>
+
+      </div>
 
         <div style={styles.socials}>
           <div style={styles.icon}><SocialIcons.X /></div>
@@ -40,20 +47,6 @@ export default function Footer() {
 
       <hr style={styles.divider} />
 
-      <div style={styles.bottomSection}>
-        <div style={styles.legalLinks}>
-          <span>© 2024 Tizly</span>
-          <Link to="/terms">Terms</Link>
-          <Link to="/privacy">Privacy</Link>
-          <Link to="/cookies">Cookies</Link>
-        </div>
-
-        <div style={styles.extraLinks}>
-          <Link to="/jobs">Jobs</Link>
-          <Link to="/tags">Tags</Link>
-          <Link to="/resources">Resources</Link>
-        </div>
-      </div>
     </footer>
   );
 }

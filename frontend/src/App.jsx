@@ -11,6 +11,10 @@ import ProductDetail from './pages/ProductDetail';
 import Community from './pages/Community';
 import Vetcare from './pages/Vetcare';
 import Cart from './pages/Cart';
+import Privacy from './pages/Privacy';
+import Terms from './pages/Terms';
+import Cookies from './pages/Cookies';
+import Jobs from './pages/Jobs';
 
 function App() {
   return (
@@ -26,6 +30,10 @@ function App() {
             <Route path="/community" element={<Community />} />
             <Route path="/vetcare" element={<Vetcare />} />
             <Route path="/cart" element={<Cart />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/cookies" element={<Cookies />} />
+            <Route path="/jobs" element={<Jobs />} />
           </Routes>
         </main>
 
