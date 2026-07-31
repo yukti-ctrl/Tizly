@@ -1,0 +1,59 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700&display=swap');
+
+:root {
+  --bg-tan: #E9DCC9;
+  --bg-light: #F8F4F0;
+  --dark: #121212;
+  --white: #ffffff;
+  --accent: #E9DCC9;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background-color: var(--bg-tan); /* The outer border color in the image */
+  color: var(--dark);
+  overflow-x: hidden;
+}
+
+a { text-decoration: none; color: inherit; }
+
+/* Main container that mimics the "inner card" look */
+.app-container {
+  background-color: var(--bg-light);
+  margin: 20px;
+  border-radius: 40px;
+  min-height: calc(100vh - 40px);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary {
+  background: var(--dark);
+  color: var(--white);
+  padding: 14px 28px;
+  border-radius: 12px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1.5px solid #ccc;
+  padding: 14px 28px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

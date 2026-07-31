@@ -2,16 +2,24 @@ from flask import Flask
 from config import Config
 from extensions import db, cors
 from routes.product_routes import product_bp
+from routes.community_routes import community_bp
+from routes.vet_routes import vet_bp 
+from routes.chatbot_routes import chatbot_bp
 
 def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
-    app.register_blueprint(product_bp, url_prefix='/products')
 
     # Initialize Extensions
     db.init_app(app)
     cors.init_app(app, resources={r"/*": {"origins": "*"}})
 
+    # Register Blueprints
+    app.register_blueprint(product_bp, url_prefix='/products')
+    app.register_blueprint(community_bp, url_prefix='/community')
+    app.register_blueprint(vet_bp, url_prefix='/vets') # Added this
+    app.register_blueprint(chatbot_bp, url_prefix='/chat')
+    
     with app.app_context():
         # Import models here to ensure they are registered
         from models.user import User
