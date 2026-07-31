@@ -3,14 +3,14 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 
 // Commented out to bypass the import error for testing
-// import Chatbot from './components/Chatbot'; 
+import Chatbot from './components/Chatbot'; 
 
 import Landing from './pages/Landing';
 import Shop from './pages/Shop';
 import ProductDetail from './pages/ProductDetail';
 import Community from './pages/Community';
 import Vetcare from './pages/Vetcare';
-import Cart from './pages/Cart'; // Ensure you created this file in pages/
+import Cart from './pages/Cart';
 
 function App() {
   return (
@@ -30,7 +30,7 @@ function App() {
         </main>
 
         {/* Chatbot is temporarily disabled for testing */}
-        {/* <Chatbot /> */}
+        <Chatbot />
         
         <Footer />
       </div>
