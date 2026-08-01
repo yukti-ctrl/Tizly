@@ -1,34 +1,24 @@
-from flask import Blueprint, request, jsonify
-from models.product import Product
+from flask import Blueprint, request, jsonify, g
+from extensions import db
+from models.product import Product, CartItem
+from utils.decorators import login_required
 
+# 1. DEFINE THE BLUEPRINT FIRST
 product_bp = Blueprint('products', __name__)
+
+# --- PRODUCT LISTING ROUTES ---
 
 @product_bp.route('', methods=['GET'])
 def get_products():
-    # Query parameters
     category = request.args.get('category')
     search = request.args.get('search')
-    min_price = request.args.get('min_price', type=float)
-    max_price = request.args.get('max_price', type=float)
-    sort = request.args.get('sort') # 'price_low', 'price_high', 'newest'
-
+    
     query = Product.query
 
-    if category:
+    if category and category != 'All':
         query = query.filter(Product.category == category)
     if search:
         query = query.filter(Product.name.contains(search) | Product.description.contains(search))
-    if min_price is not None:
-        query = query.filter(Product.price >= min_price)
-    if max_price is not None:
-        query = query.filter(Product.price <= max_price)
-
-    if sort == 'price_low':
-        query = query.order_by(Product.price.asc())
-    elif sort == 'price_high':
-        query = query.order_by(Product.price.desc())
-    else:
-        query = query.order_by(Product.created_at.desc())
 
     products = query.all()
     
@@ -39,7 +29,8 @@ def get_products():
         "category": p.category,
         "image_url": p.image_url,
         "rating": p.rating_avg,
-        "description": p.description
+        "description": p.description,
+        "stock": p.stock_qty
     } for p in products]), 200
 
 @product_bp.route('/<int:product_id>', methods=['GET'])
@@ -54,3 +45,89 @@ def get_product(product_id):
         "image_url": product.image_url,
         "stock": product.stock_qty
     }), 200
+
+# --- SECURE CART ROUTES (FOR DEPLOYMENT) ---
+
+@product_bp.route('/cart', methods=['GET'])
+@login_required
+def get_cart():
+    try:
+        items = CartItem.query.filter_by(user_id=g.user.id).all()
+        cart_data = []
+        
+        for i in items:
+            # Check if product actually exists to avoid NoneType errors
+            if i.product:
+                cart_data.append({
+                    "id": i.id,
+                    "product_id": i.product_id,
+                    "name": i.product.name,
+                    "price": i.product.price,
+                    "quantity": i.quantity,
+                    "image_url": i.product.image_url
+                })
+        
+        return jsonify(cart_data), 200
+    except Exception as e:
+        print(f"Cart Fetch Error: {str(e)}")
+        return jsonify({"error": "Internal Server Error"}), 500
+
+@product_bp.route('/cart', methods=['POST'])
+@login_required
+def add_to_cart():
+    data = request.json
+    product_id = data.get('product_id')
+    
+    if not product_id:
+        return jsonify({"error": "Product ID required"}), 400
+
+    # Check if item already exists in this specific user's cart
+    existing = CartItem.query.filter_by(user_id=g.user.id, product_id=product_id).first()
+    
+    if existing:
+        existing.quantity += 1
+    else:
+        new_item = CartItem(user_id=g.user.id, product_id=product_id, quantity=1)
+        db.session.add(new_item)
+    
+    db.session.commit()
+    return jsonify({"message": "Cart updated"}), 200
+
+# backend/routes/product_routes.py
+
+@product_bp.route('/cart/sync', methods=['POST'])
+@login_required
+def sync_cart():
+    data = request.json
+    local_items = data.get('items', [])
+    
+    try:
+        for item in local_items:
+            # Use 'product_id' or 'id' depending on how it was saved in localStorage
+            p_id = item.get('product_id') or item.get('id')
+            qty = item.get('quantity', 1)
+            
+            if not p_id: continue
+
+            existing = CartItem.query.filter_by(user_id=g.user.id, product_id=p_id).first()
+            if existing:
+                existing.quantity += qty
+            else:
+                new_item = CartItem(user_id=g.user.id, product_id=p_id, quantity=qty)
+                db.session.add(new_item)
+                
+        db.session.commit()
+        return jsonify({"message": "Synced"}), 200
+    except Exception as e:
+        db.session.rollback()
+        print(f"Sync Error: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+    
+
+@product_bp.route('/cart/<int:item_id>', methods=['DELETE'])
+@login_required
+def remove_from_cart(item_id):
+    item = CartItem.query.filter_by(id=item_id, user_id=g.user.id).first_or_404()
+    db.session.delete(item)
+    db.session.commit()
+    return jsonify({"message": "Item removed"}), 200

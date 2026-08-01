@@ -65,3 +65,11 @@ a { text-decoration: none; color: inherit; }
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}

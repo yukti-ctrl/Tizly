@@ -13,6 +13,10 @@ class Product(db.Model):
     rating_avg = db.Column(db.Float, default=0.0)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+    # Relationships
+    cart_items = db.relationship('CartItem', back_populates='product', cascade="all, delete-orphan")
+    wishlist_items = db.relationship('WishlistItem', back_populates='product', cascade="all, delete-orphan")
+
 class CartItem(db.Model):
     __tablename__ = 'cart_items'
     id = db.Column(db.Integer, primary_key=True)
@@ -20,8 +24,14 @@ class CartItem(db.Model):
     product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
     quantity = db.Column(db.Integer, default=1)
 
+    # Relationship to Product
+    product = db.relationship('Product', back_populates='cart_items')
+
 class WishlistItem(db.Model):
     __tablename__ = 'wishlist_items'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
+
+    # Relationship to Product
+    product = db.relationship('Product', back_populates='wishlist_items')
