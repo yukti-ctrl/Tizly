@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../api/axios';
+import { useCart } from '../context/CartContext'; // 1. Import useCart
 import { ArrowLeft, Minus, Plus, ShoppingCart, Heart } from 'lucide-react';
 
 export default function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { addToCart } = useCart(); // 2. Access addToCart
   const [product, setProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
 
@@ -14,6 +16,14 @@ export default function ProductDetail() {
       .then(res => setProduct(res.data))
       .catch(err => console.error(err));
   }, [id]);
+
+  // 3. Create the handler
+  const handleAddToCart = () => {
+    // We pass the quantity selected in the detail page
+    for(let i = 0; i < quantity; i++) {
+        addToCart(product);
+    }
+  };
 
   if (!product) return <div style={{padding: '100px', textAlign: 'center'}}>Loading details...</div>;
 
@@ -24,20 +34,16 @@ export default function ProductDetail() {
       </button>
 
       <div style={styles.content}>
-        {/* Left: Image */}
         <div style={styles.imageSection}>
           <img src={product.image_url} alt={product.name} style={styles.mainImg} />
         </div>
 
-        {/* Right: Info */}
         <div style={styles.infoSection}>
           <span style={styles.tag}>{product.category}</span>
           <h1 style={styles.title}>{product.name}</h1>
           <p style={styles.price}>${product.price.toFixed(2)}</p>
           
-          <p style={styles.description}>
-            {product.description || "No description provided for this premium pet product."}
-          </p>
+          <p style={styles.description}>{product.description}</p>
 
           <div style={styles.actionRow}>
             <div style={styles.qtySelector}>
@@ -46,22 +52,24 @@ export default function ProductDetail() {
               <button onClick={() => setQuantity(quantity + 1)} style={styles.qtyBtn}><Plus size={16} /></button>
             </div>
             
-            <button className="btn-primary" style={{flex: 1, justifyContent: 'center'}}>
+            {/* 4. Attach the handler here */}
+            <button 
+              className="btn-primary" 
+              style={{flex: 1, justifyContent: 'center'}}
+              onClick={handleAddToCart}
+            >
               <ShoppingCart size={20} /> Add to Cart
             </button>
             
             <button style={styles.wishBtn}><Heart size={20} /></button>
           </div>
-
-          <div style={styles.meta}>
-            <p><strong>Stock:</strong> {product.stock > 0 ? 'In Stock' : 'Out of Stock'}</p>
-            <p><strong>Free Shipping</strong> on orders over $50</p>
-          </div>
+          {/* ... rest of the meta info */}
         </div>
       </div>
     </div>
   );
 }
+// ... (styles stay the same)
 
 const styles = {
   container: { padding: '40px 8%' },

@@ -4,7 +4,14 @@ import { useCart } from '../context/CartContext';
 
 export default function ProductCard({ product }) {
   const navigate = useNavigate();
-  const { addToCart } = useCart(); // Access the addToCart function
+  const { addToCart } = useCart();
+
+  const handleAdd = (e) => {
+    e.preventDefault(); // Extra precaution
+    e.stopPropagation(); // Prevents navigating to Detail page
+    addToCart(product);
+    console.log("Added to cart:", product.name); // Debug log
+  };
 
   return (
     <div 
@@ -19,19 +26,16 @@ export default function ProductCard({ product }) {
           <span style={styles.category}>{product.category}</span>
           <div style={styles.rating}>
             <Star size={12} fill="#FFB800" color="#FFB800" />
-            <span style={{marginLeft: '4px'}}>{product.rating}</span>
+            <span style={{marginLeft: '4px'}}>{product.rating || "5.0"}</span>
           </div>
         </div>
         <h3 style={styles.name}>{product.name}</h3>
         <div style={styles.priceRow}>
           <span style={styles.price}>${product.price.toFixed(2)}</span>
-          {/* Updated this button to actually add the item to the cart */}
           <button 
             style={styles.cartBtn} 
-            onClick={(e) => {
-              e.stopPropagation(); // Prevents clicking the button from opening the detail page
-              addToCart(product);  // Calls the cart context function
-            }}
+            onClick={handleAdd} // Use the new handler
+            title="Add to Cart"
           >
             <ShoppingCart size={16} />
           </button>
