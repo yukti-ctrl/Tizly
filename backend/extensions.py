@@ -26,3 +26,4 @@ def init_firebase(app):
             print(f"!!! ERROR during initialize_app: {str(e)}")
     else:
         print(">>> Firebase already initialized.")
+
