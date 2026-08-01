@@ -38,3 +38,4 @@ frontend/yarn-debug.log*
 frontend/yarn-error.log*
 
 firebase-service-account.json
+changes.md
