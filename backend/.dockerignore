@@ -1,0 +1,6 @@
+venv/
+__pycache__/
+*.pyc
+.env
+instance/tizly.db
+firebase-service-account.json
