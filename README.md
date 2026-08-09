@@ -34,3 +34,12 @@ cd backend
 python -m venv venv
 source venv/bin/activate  # Windows: venv\Scripts\activate
 pip install -r requirements.txt
+python seed.py  #seed the database
+python app.py #run the flask api based backend server
+```
+### 2. Frontend Setup
+```bash
+cd frontend
+npm install
+npm run dev
+```
