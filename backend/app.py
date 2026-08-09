@@ -14,15 +14,12 @@ def create_app(config_class=Config):
 
     # 1. Initialize Extensions
     db.init_app(app)
-    
-    # 2. Initialize Firebase Admin SDK
-    # This function is defined in extensions.py and looks for your .json file
     init_firebase(app)
     
-    # 3. PROPER CORS SETUP
-    CORS(app, resources={r"/*": {"origins": ["http://localhost:5173", "http://127.0.0.1:5173"]}})
+    # 2. PROPER CORS SETUP
+    CORS(app, resources={r"/*": {"origins": "*"}})
 
-    # 4. Register Blueprints
+    # 3. Register Blueprints
     app.register_blueprint(product_bp, url_prefix='/products')
     app.register_blueprint(community_bp, url_prefix='/community')
     app.register_blueprint(vet_bp, url_prefix='/vets')
@@ -30,12 +27,21 @@ def create_app(config_class=Config):
     app.register_blueprint(auth_bp, url_prefix='/auth')
     
     with app.app_context():
-        # Import models here to ensure they are registered for table creation
         from models.user import User
         from models.product import Product, CartItem, WishlistItem
         from models.community import CommunityPost, PostComment
         from models.vet import Vet, VetAppointment
         db.create_all()
+
+        # --- AUTO-SEED LOGIC FOR AWS ---
+        if Product.query.count() == 0:
+            print("Database empty. Seeding initial data...")
+            p1 = Product(name="Premium Dog Kibble", price=45.99, category="Food", image_url="https://placehold.co/400x400?text=Dog+Food", description="Nutritious food.")
+            p2 = Product(name="Cat Feather Toy", price=12.50, category="Toys", image_url="https://placehold.co/400x400?text=Cat+Toy", description="Fun toy.")
+            v1 = Vet(name="Dr. Sarah Smith", specialization="Surgery", bio="10 years exp.", image_url="https://placehold.co/200x200?text=Dr+Sarah")
+            db.session.add_all([p1, p2, v1])
+            db.session.commit()
+            print("Seeding complete.")
 
     @app.route('/health', methods=['GET'])
     def health_check():
@@ -45,5 +51,4 @@ def create_app(config_class=Config):
 
 if __name__ == '__main__':
     app = create_app()
-    # Run the server on port 5000
     app.run(debug=True, port=5000)
