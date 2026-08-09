@@ -41,5 +41,9 @@ python app.py #run the flask api based backend server
 ```bash
 cd frontend
 npm install
-npm run dev
+npm run dev #to run local development server
+npm run build #for final build to deploy
 ```
+
+## Folder Structure:
+[![Dynamic File Tree](https://www.readmecodegen.com/api/file-tree-embed?repo=yukti-ctrl%2FTizly&branch=main&transparentBg=true&showHeader=true&showBorder=true&showFileIcons=true&style=emoji&fontSize=18)](https://github.com/Readmecodegen/dynamic-github-file-tree-embed)
