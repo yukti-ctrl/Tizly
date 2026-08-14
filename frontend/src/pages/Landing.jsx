@@ -11,15 +11,22 @@ export default function Landing() {
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
-    // Fetch data for all sections
-    api.get('/products').then(res => setFeaturedProducts(res.data.slice(0, 4)));
-    api.get('/vets').then(res => setVets(res.data.slice(0, 3)));
-    api.get('/community/posts').then(res => setPosts(res.data.slice(0, 2)));
+    // Fetch data for all sections with safety checks
+    api.get('/products').then(res => 
+      setFeaturedProducts(Array.isArray(res.data) ? res.data.slice(0, 4) : [])
+    ).catch(() => setFeaturedProducts([]));
+
+    api.get('/vets').then(res => 
+      setVets(Array.isArray(res.data) ? res.data.slice(0, 3) : [])
+    ).catch(() => setVets([]));
+
+    api.get('/community/posts').then(res => 
+      setPosts(Array.isArray(res.data) ? res.data.slice(0, 2) : [])
+    ).catch(() => setPosts([]));
   }, []);
 
   return (
     <div style={styles.page}>
-      
       
       {/* 1. HERO SECTION */}
       <section style={styles.heroSection}>
@@ -43,28 +50,31 @@ export default function Landing() {
         </div>
 
         <div style={styles.heroImageContainer}>
+          {/* Main Image */}
           <img 
             src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?q=80&w=2043&auto=format&fit=crop" 
-            alt="Straightened Cat" 
+            alt="Tizly Hero Cat" 
             style={styles.heroImg}
           />
           
-          {/* REPOSITIONED FLOATING TAG */}
-          <div style={styles.floatingTag}>
-            <div style={styles.miniImg}>🐈</div>
-            <div>
-              <p style={{fontSize: '11px', opacity: 0.6, margin: 0}}>Top Rated Package</p>
-              <p style={{fontWeight: '800', fontSize: '14px', margin: 0, color: '#121212'}}>Grooming + Vet</p>
-              <p style={{fontWeight: '700', fontSize: '13px', margin: 0, color: '#ff8a65'}}>$45.00</p>
+          {/* TAG ROW: Positioned below the image */}
+          <div style={styles.tagRow}>
+            <div style={styles.floatingTagCard}>
+              <div style={styles.miniImg}>🐈</div>
+              <div>
+                <p style={styles.tagSub}>Top Rated</p>
+                <p style={styles.tagMain}>Grooming + Vet</p>
+                <p style={styles.tagPrice}>$45.00</p>
+              </div>
             </div>
-          </div>
 
-          {/* ADDED SECOND TAG FOR BALANCE */}
-          <div style={styles.floatingTagRight}>
-            <div style={styles.miniImg}>✨</div>
-            <div>
-              <p style={{fontSize: '11px', opacity: 0.6, margin: 0}}>Professional</p>
-              <p style={{fontWeight: '800', fontSize: '14px', margin: 0}}>24/7 Support</p>
+            <div style={styles.floatingTagCard}>
+              <div style={styles.miniImg}>✨</div>
+              <div>
+                <p style={styles.tagSub}>Professional</p>
+                <p style={styles.tagMain}>24/7 Support</p>
+                <p style={styles.tagPrice}>Trusted Care</p>
+              </div>
             </div>
           </div>
         </div>
@@ -74,18 +84,18 @@ export default function Landing() {
       {/* 2. EXPERT CARE SECTION */}
       <section style={styles.section}>
         <div style={styles.sectionHeader}>
-          <div>
+          <div style={styles.headerText}>
             <h2 style={styles.sectionTitle}>Our Expert Care</h2>
             <p style={styles.sectionSub}>Meet our certified professional veterinarians</p>
           </div>
           <Link to="/vetcare" style={styles.viewAll}>View All Vets <ArrowRight size={18} /></Link>
         </div>
 
-        <div style={styles.vetGrid}>
+        <div style={styles.responsiveGrid}>
           {vets.map(vet => (
             <div key={vet.id} style={styles.vetCard}>
               <img src={vet.image_url} alt={vet.name} style={styles.vetImg} />
-              <h4 style={{marginTop: '15px', fontSize: '18px'}}>{vet.name}</h4>
+              <h4 style={{marginTop: '15px', fontSize: '18px', fontWeight: '800'}}>{vet.name}</h4>
               <p style={{color: '#888', fontSize: '14px', marginBottom: '10px'}}>{vet.specialization}</p>
               <div style={styles.rating}>
                 <Star size={14} fill="#FFB800" color="#FFB800" />
@@ -97,9 +107,9 @@ export default function Landing() {
       </section>
 
       {/* 3. FEATURED PRODUCTS SECTION */}
-      <section style={{...styles.section, backgroundColor: '#fff', borderRadius: '40px', padding: '60px 40px'}}>
+      <section style={{...styles.section, backgroundColor: '#fff', borderRadius: '40px'}}>
         <div style={styles.sectionHeader}>
-          <div>
+          <div style={styles.headerText}>
             <h2 style={styles.sectionTitle}>Featured Products</h2>
             <p style={styles.sectionSub}>Best sellers chosen by our community</p>
           </div>
@@ -116,7 +126,7 @@ export default function Landing() {
       {/* 4. COMMUNITY GLIMPSE SECTION */}
       <section style={styles.section}>
         <div style={styles.sectionHeader}>
-          <div>
+          <div style={styles.headerText}>
             <h2 style={styles.sectionTitle}>Community Moments</h2>
             <p style={styles.sectionSub}>Latest stories from pet lovers like you</p>
           </div>
@@ -127,12 +137,12 @@ export default function Landing() {
           {posts.map(post => (
             <div key={post.id} style={styles.glimpseCard}>
               <div style={styles.glimpseHeader}>
-                <div style={styles.glimpseAvatar}>{post.author[0]}</div>
-                <span style={{fontWeight: 'bold'}}>{post.author}</span>
+                <div style={styles.glimpseAvatar}>{post.author ? post.author[0] : 'U'}</div>
+                <span style={{fontWeight: 'bold'}}>{post.author || "User"}</span>
               </div>
-              <p style={styles.glimpseText}>{post.content.substring(0, 100)}...</p>
+              <p style={styles.glimpseText}>{post.content ? post.content.substring(0, 100) : ""}...</p>
               <div style={styles.glimpseStats}>
-                <span style={styles.stat}><Heart size={16} /> {post.likes}</span>
+                <span style={styles.stat}><Heart size={16} /> {post.likes || 0}</span>
                 <span style={styles.stat}><MessageCircle size={16} /> 12</span>
               </div>
             </div>
@@ -145,82 +155,125 @@ export default function Landing() {
 }
 
 const styles = {
-  page: { display: 'flex', flexDirection: 'column', gap: '20px' },
-  badge: { backgroundColor: '#E9DCC9', width: 'fit-content', padding: '8px 16px', borderRadius: '50px', fontSize: '13px', fontWeight: '700', marginBottom: '20px' },
-  heroSection: { display: 'flex', padding: '60px 8%', alignItems: 'center', minHeight: '80vh', gap: '40px' },
-  heroContent: { flex: 1.2 },
-  title: { fontSize: '64px', fontWeight: '800', lineHeight: '1.1', marginBottom: '24px', letterSpacing: '-2px' },
-  subtitle: { fontSize: '18px', opacity: 0.7, marginBottom: '40px', lineHeight: '1.6', maxWidth: '500px' },
-  btnGroup: { display: 'flex', gap: '20px' },
-  playIcon: { background: '#eee', padding: '8px', borderRadius: '50%', display: 'flex', alignItems: 'center' },
-   heroImageContainer: { 
-    flex: 1, 
-    position: 'relative', 
+  page: { display: 'flex', flexDirection: 'column', width: '100%', overflowX: 'hidden' },
+  badge: { backgroundColor: '#E9DCC9', color: '#121212', width: 'fit-content', padding: '8px 16px', borderRadius: '50px', fontSize: '12px', fontWeight: '800', marginBottom: '20px' },
+  
+  // HERO: Responsive Flex Setup
+  heroSection: { 
     display: 'flex', 
-    justifyContent: 'center', 
-    alignItems: 'center' 
+    flexWrap: 'wrap', // Stacks on mobile
+    padding: '60px 5%', 
+    alignItems: 'center', 
+    minHeight: '80vh', 
+    gap: '40px',
+    justifyContent: 'center'
+  },
+  heroContent: { 
+    flex: '1 1 450px', // Base width 450px, can grow/shrink
+    textAlign: 'left',
+    minWidth: '320px'
+  },
+  title: { 
+    fontSize: 'clamp(32px, 6vw, 64px)', // Responsive font size
+    fontWeight: '900', 
+    lineHeight: '1.1', 
+    marginBottom: '24px', 
+    letterSpacing: '-2px' 
+  },
+  subtitle: { 
+    fontSize: 'clamp(16px, 2vw, 18px)', 
+    opacity: 0.7, 
+    marginBottom: '40px', 
+    lineHeight: '1.6', 
+    maxWidth: '550px' 
+  },
+  btnGroup: { display: 'flex', gap: '15px', flexWrap: 'wrap' },
+  playIcon: { background: '#eee', padding: '8px', borderRadius: '50%', display: 'flex', alignItems: 'center' },
+  
+  // HERO IMAGE & TAGS
+  heroImageContainer: { 
+    flex: '1 1 400px', 
+    display: 'flex', 
+    flexDirection: 'column', 
+    alignItems: 'center', 
+    gap: '25px',
+    minWidth: '320px'
   },
   heroImg: { 
     width: '100%', 
-    maxWidth: '1000px', // Prevents it from becoming too massive
+    maxWidth: '550px', 
     borderRadius: '40px', 
-    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15)',
-    zIndex: 1
+    boxShadow: '0 20px 40px rgba(0,0,0,0.08)' 
   },
-  floatingTag: { 
-    position: 'absolute', 
-    bottom: '40px', 
-    left: '-10px', // Pushes it further left so it just "clips" the edge of the image
-    backgroundColor: '#fff', 
-    padding: '15px 20px', 
-    borderRadius: '24px', 
-    display: 'flex', 
-    gap: '12px', 
-    alignItems: 'center', 
-    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-    zIndex: 2,
-    border: '1px solid rgba(0,0,0,0.05)'
+  tagRow: {
+    display: 'flex',
+    gap: '15px',
+    width: '100%',
+    justifyContent: 'center',
+    flexWrap: 'wrap' // Tags wrap on tiny screens
   },
-  floatingTagRight: { 
-    position: 'absolute', 
-    top: '40px', 
-    right: '-10px', 
+  floatingTagCard: { 
     backgroundColor: '#fff', 
     padding: '12px 18px', 
     borderRadius: '24px', 
     display: 'flex', 
-    gap: '10px', 
+    gap: '12px', 
     alignItems: 'center', 
-    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
-    zIndex: 2,
-    border: '1px solid rgba(0,0,0,0.05)'
+    boxShadow: '0 10px 25px rgba(0,0,0,0.05)',
+    flex: '1 1 200px',
+    maxWidth: '260px',
+    border: '1px solid rgba(0,0,0,0.03)'
   },
   miniImg: { 
     fontSize: '20px', 
     background: '#F8F4F0', 
-    width: '45px', 
-    height: '45px', 
-    borderRadius: '12px', 
+    width: '40px', 
+    height: '40px', 
+    borderRadius: '10px', 
     display: 'flex', 
     alignItems: 'center', 
     justifyContent: 'center' 
   },
-  
-  section: { padding: '80px 8%' },
-  sectionHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '40px' },
-  sectionTitle: { fontSize: '32px', fontWeight: '800' },
+  tagSub: { fontSize: '10px', opacity: 0.5, margin: 0, fontWeight: '700', textTransform: 'uppercase' },
+  tagMain: { fontWeight: '800', fontSize: '13px', margin: 0, color: '#121212' },
+  tagPrice: { fontWeight: '700', fontSize: '12px', margin: 0, color: '#ff8a65' },
+
+  // SECTIONS & GRIDS
+  section: { padding: '80px 5%' },
+  sectionHeader: { 
+    display: 'flex', 
+    justifyContent: 'space-between', 
+    alignItems: 'flex-end', 
+    marginBottom: '40px',
+    flexWrap: 'wrap',
+    gap: '20px'
+  },
+  headerText: { flex: 1, minWidth: '250px' },
+  sectionTitle: { fontSize: 'clamp(24px, 4vw, 32px)', fontWeight: '800' },
   sectionSub: { color: '#666', marginTop: '5px' },
-  viewAll: { display: 'flex', alignItems: 'center', gap: '8px', fontWeight: '700', color: '#121212', fontSize: '14px' },
+  viewAll: { display: 'flex', alignItems: 'center', gap: '8px', fontWeight: '700', color: '#121212', fontSize: '14px', whiteSpace: 'nowrap' },
   
-  vetGrid: { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '30px' },
-  vetCard: { backgroundColor: '#fff', padding: '20px', borderRadius: '30px', textAlign: 'center', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' },
+  responsiveGrid: { 
+    display: 'grid', 
+    gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', 
+    gap: '25px' 
+  },
+  vetCard: { backgroundColor: '#fff', padding: '30px', borderRadius: '32px', textAlign: 'center', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' },
   vetImg: { width: '100px', height: '100px', borderRadius: '50%', objectFit: 'cover', border: '4px solid #F8F4F0' },
   rating: { display: 'flex', alignItems: 'center', justifyContent: 'center' },
   
-  productGrid: { display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px' },
+  productGrid: { 
+    display: 'grid', 
+    gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', // Auto-responsive columns
+    gap: '20px' 
+  },
   
-  communityGrid: { display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '30px' },
-  glimpseCard: { backgroundColor: '#fff', padding: '30px', borderRadius: '30px', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' },
+  communityGrid: { 
+    display: 'grid', 
+    gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', 
+    gap: '25px' 
+  },
+  glimpseCard: { backgroundColor: '#F8F4F0', padding: '30px', borderRadius: '32px', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' },
   glimpseHeader: { display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '15px' },
   glimpseAvatar: { width: '35px', height: '35px', borderRadius: '50%', backgroundColor: '#E9DCC9', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '12px' },
   glimpseText: { color: '#555', lineHeight: '1.6', marginBottom: '20px' },

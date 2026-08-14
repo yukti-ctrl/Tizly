@@ -123,7 +123,31 @@ def sync_cart():
         print(f"Sync Error: {str(e)}")
         return jsonify({"error": str(e)}), 500
     
+@product_bp.route('/seller/add', methods=['POST'])
+@login_required
+def seller_add_product():
+    # Security check: Ensure the logged-in user is actually a seller
+    if g.user.role != 'seller':
+        return jsonify({"error": "Unauthorized. Only sellers can list products."}), 403
 
+    data = request.json
+    try:
+        new_product = Product(
+            name=data.get('name'),
+            price=float(data.get('price')),
+            description=data.get('description'),
+            category=data.get('category'),
+            image_url=data.get('image_url') or "https://placehold.co/400x400?text=Pet+Product",
+            seller_id=g.user.id # Link product to this user
+        )
+        db.session.add(new_product)
+        db.session.commit()
+        return jsonify({"message": "Product created", "id": new_product.id}), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
+
+        
 @product_bp.route('/cart/<int:item_id>', methods=['DELETE'])
 @login_required
 def remove_from_cart(item_id):

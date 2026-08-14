@@ -1,4 +1,3 @@
-// src/context/AuthContext.jsx
 import { createContext, useContext, useEffect, useState } from 'react';
 import { auth, googleProvider } from '../firebase/firebaseConfig.js';
 import { 
@@ -16,14 +15,18 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [signupRole, setSignupRole] = useState('user'); // Stores role temporarily
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
+        const token = await firebaseUser.getIdToken();
         try {
-          const token = await firebaseUser.getIdToken();
-          const res = await api.post('/auth/verify', { idToken: token });
-          setUser({ ...firebaseUser, dbId: res.data.id, role: res.data.role, name: res.data.name });
+          const res = await api.post('/auth/verify', { 
+            idToken: token, 
+            role: signupRole 
+          });
+          setUser({ ...firebaseUser, ...res.data });
         } catch (err) {
           console.error("Auth sync failed", err);
           setUser(null);
@@ -34,25 +37,25 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     });
     return () => unsubscribe();
-  }, []);
+  }, [signupRole]);
 
-  const loginWithGoogle = () => signInWithPopup(auth, googleProvider);
+  const loginWithGoogle = (role = 'user') => {
+    setSignupRole(role);
+    return signInWithPopup(auth, googleProvider);
+  };
   
-  const loginWithEmail = (email, password) => 
-    signInWithEmailAndPassword(auth, email, password);
+  const loginWithEmail = (email, password) => signInWithEmailAndPassword(auth, email, password);
 
-  const signupWithEmail = (email, password) => 
-    createUserWithEmailAndPassword(auth, email, password);
-
-  const resetPassword = (email) => 
-    sendPasswordResetEmail(auth, email);
+  const signupWithEmail = (email, password, role) => {
+    setSignupRole(role);
+    return createUserWithEmailAndPassword(auth, email, password);
+  };
 
   const logout = () => signOut(auth);
+  const resetPassword = (email) => sendPasswordResetEmail(auth, email);
 
   return (
-    <AuthContext.Provider value={{ 
-      user, loginWithGoogle, loginWithEmail, signupWithEmail, resetPassword, logout, loading 
-    }}>
+    <AuthContext.Provider value={{ user, loginWithGoogle, loginWithEmail, signupWithEmail, logout, resetPassword, loading }}>
       {!loading && children}
     </AuthContext.Provider>
   );

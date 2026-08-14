@@ -1,77 +1,86 @@
 import { useState, useEffect } from 'react';
 import api from '../api/axios';
 import ProductCard from '../components/ProductCard';
-import { Search, Filter } from 'lucide-react';
+import { Search, Loader2 } from 'lucide-react';
 
 export default function Shop() {
   const [products, setProducts] = useState([]);
-  const [category, setCategory] = useState('');
   const [search, setSearch] = useState('');
-
-  const categories = ['All', 'Food', 'Toys', 'Accessories', 'Supplies'];
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const params = new URLSearchParams();
-    if (category && category !== 'All') params.append('category', category);
-    if (search) params.append('search', search);
-
-    api.get(`/products?${params.toString()}`).then(res => setProducts(res.data));
-  }, [category, search]);
+    const fetchProducts = async () => {
+      setLoading(true);
+      try {
+        const res = await api.get(`/products?search=${search}`);
+        setProducts(Array.isArray(res.data) ? res.data : []);
+      } catch (err) {
+        setProducts([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProducts();
+  }, [search]);
 
   return (
-    <div style={{ padding: '40px 8%' }}>
+    <div style={styles.container}>
       <header style={styles.header}>
-        <div>
-          <h1 style={{ fontSize: '36px', fontWeight: '800' }}>Tizly Shop</h1>
-          <p style={{ color: '#666' }}>Quality essentials for your furry friends.</p>
+        <div style={styles.titleSection}>
+          <h1 style={styles.title}>Tizly Shop</h1>
+          <p style={styles.subtitle}>Premium essentials for your pets.</p>
         </div>
         
-        <div style={styles.filterBar}>
-          <div style={styles.searchBox}>
-            <Search size={18} color="#888" />
-            <input 
-              style={styles.searchInput} 
-              placeholder="Search products..." 
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </div>
+        <div style={styles.searchWrapper}>
+          <Search size={18} style={styles.searchIcon} />
+          <input 
+            style={styles.searchInput} 
+            placeholder="Search products..." 
+            onChange={(e) => setSearch(e.target.value)}
+          />
         </div>
       </header>
 
-      <div style={styles.categoryList}>
-        {categories.map(cat => (
-          <button 
-            key={cat} 
-            onClick={() => setCategory(cat)}
-            style={{
-              ...styles.catBtn,
-              backgroundColor: category === cat || (cat === 'All' && !category) ? '#121212' : '#fff',
-              color: category === cat || (cat === 'All' && !category) ? '#fff' : '#121212'
-            }}
-          >
-            {cat}
-          </button>
-        ))}
-      </div>
-
-      <div style={styles.grid}>
-        {products.length > 0 ? (
-          products.map(product => <ProductCard key={product.id} product={product} />)
-        ) : (
-          <p style={{ gridColumn: '1/-1', textAlign: 'center', padding: '50px' }}>No products found.</p>
-        )}
-      </div>
+      {loading ? (
+        <div style={styles.loaderBox}><Loader2 className="spinner" size={40} /></div>
+      ) : (
+        <div className="tizly-grid"> {/* Fixed CSS class */}
+          {products.map(product => (
+            <ProductCard key={product.id} product={product} />
+          ))}
+          {products.length === 0 && (
+            <div style={styles.empty}>No products found.</div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
 
 const styles = {
-  header: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '30px', flexWrap: 'wrap', gap: '20px' },
-  filterBar: { display: 'flex', gap: '15px' },
-  searchBox: { display: 'flex', alignItems: 'center', gap: '10px', backgroundColor: '#fff', padding: '10px 20px', borderRadius: '15px', border: '1px solid #eee' },
-  searchInput: { border: 'none', outline: 'none', fontSize: '14px', width: '200px' },
-  categoryList: { display: 'flex', gap: '12px', marginBottom: '40px', overflowX: 'auto', paddingBottom: '10px' },
-  catBtn: { padding: '8px 20px', borderRadius: '10px', border: '1px solid #eee', fontWeight: '600', cursor: 'pointer', transition: 'all 0.2s' },
-  grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '30px' }
+  container: { padding: '20px 5% 60px 5%', width: '100%' },
+  header: { 
+    display: 'flex', 
+    justifyContent: 'space-between', 
+    alignItems: 'center', 
+    marginBottom: '30px', 
+    flexWrap: 'wrap', 
+    gap: '20px' 
+  },
+  titleSection: { flex: '1 1 250px' },
+  title: { fontSize: 'clamp(24px, 5vw, 32px)', fontWeight: '900', margin: 0 },
+  subtitle: { color: '#666', fontSize: '14px', marginTop: '4px' },
+  searchWrapper: { position: 'relative', flex: '1 1 300px', maxWidth: '100%' },
+  searchIcon: { position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)', color: '#aaa' },
+  searchInput: { 
+    width: '100%', 
+    padding: '12px 15px 12px 45px', 
+    borderRadius: '12px', 
+    border: '1px solid #eee', 
+    outline: 'none', 
+    fontSize: '14px',
+    backgroundColor: '#fff'
+  },
+  loaderBox: { display: 'flex', justifyContent: 'center', padding: '100px 0' },
+  empty: { gridColumn: '1/-1', textAlign: 'center', padding: '100px 0', color: '#888', fontWeight: '600' }
 };

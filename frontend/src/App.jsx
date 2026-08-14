@@ -17,6 +17,7 @@ import Cookies from './pages/Cookies';
 import Jobs from './pages/Jobs';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import Profile from './pages/Profile';
 
 function App() {
   return (
@@ -38,6 +39,7 @@ function App() {
             <Route path="/jobs" element={<Jobs />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
+            <Route path="/profile" element={<Profile />} />
           </Routes>
         </main>
 

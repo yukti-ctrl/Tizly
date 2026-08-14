@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from firebase_admin import auth
 from extensions import db
 from models.user import User
+from models.vet import Vet
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -9,35 +10,48 @@ auth_bp = Blueprint('auth', __name__)
 def verify_token():
     data = request.get_json()
     token = data.get('idToken')
+    # Role is sent from frontend only during signup
+    requested_role = data.get('role', 'user') 
 
     if not token:
-        print("Backend Error: No token received from frontend")
         return jsonify({"error": "No token provided"}), 400
 
     try:
-        # 1. Verify the token with Firebase
         decoded_token = auth.verify_id_token(token)
         uid = decoded_token['uid']
         
-        print(f"Verified Firebase UID: {uid}") # Debug log
-
-        # 2. Sync with database
         user = User.query.filter_by(firebase_uid=uid).first()
+        
         if not user:
-            email = decoded_token.get('email')
-            name = decoded_token.get('name', 'Pet Lover')
-            user = User(firebase_uid=uid, email=email, name=name)
+            # Create new user in local DB
+            user = User(
+                firebase_uid=uid,
+                email=decoded_token.get('email'),
+                name=decoded_token.get('name', 'Pet Lover'),
+                role=requested_role,
+                photo_url=decoded_token.get('picture', '')
+            )
             db.session.add(user)
             db.session.commit()
-            print(f"Created new user in DB: {email}")
+
+            # If signing up as a Vet, create the base profile
+            if requested_role == 'vet':
+                new_vet = Vet(
+                    user_id=user.id, 
+                    name=user.name, 
+                    specialization="General Care",
+                    image_url=user.photo_url or "https://placehold.co/200x200?text=Vet",
+                    bio="Certified Veterinary Professional."
+                )
+                db.session.add(new_vet)
+                db.session.commit()
 
         return jsonify({
             "id": user.id,
             "name": user.name,
-            "role": user.role
+            "role": user.role,
+            "email": user.email
         }), 200
-
     except Exception as e:
-        # THIS PRINT WILL TELL US EXACTLY WHAT IS WRONG
-        print(f"Backend Auth Error: {str(e)}") 
+        print(f"Auth sync error: {str(e)}")
         return jsonify({"error": str(e)}), 401

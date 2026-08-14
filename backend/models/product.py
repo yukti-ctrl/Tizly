@@ -11,6 +11,8 @@ class Product(db.Model):
     stock_qty = db.Column(db.Integer, default=0)
     image_url = db.Column(db.String(255))
     rating_avg = db.Column(db.Float, default=0.0)
+    # Track which seller listed the product
+    seller_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True) 
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     # Relationships
@@ -23,8 +25,6 @@ class CartItem(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
     quantity = db.Column(db.Integer, default=1)
-
-    # Relationship to Product
     product = db.relationship('Product', back_populates='cart_items')
 
 class WishlistItem(db.Model):
@@ -32,6 +32,4 @@ class WishlistItem(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
-
-    # Relationship to Product
     product = db.relationship('Product', back_populates='wishlist_items')

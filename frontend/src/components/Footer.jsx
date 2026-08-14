@@ -1,6 +1,6 @@
+import React from 'react';
 import { Link } from 'react-router-dom';
 
-// Simple SVG Icons to avoid library import errors
 const SocialIcons = {
   Facebook: () => (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
@@ -19,23 +19,20 @@ const SocialIcons = {
 export default function Footer() {
   return (
     <footer style={styles.footerContainer}>
-      <div style={styles.topSection}>
+      <div style={styles.topSection} className="responsive-footer">
         <div style={styles.logo}>Tizly</div>
         
-      <div style={styles.bottomSection}>
-        <div style={styles.legalLinks}>
-          <span>© 2026 Tizly</span>
-          <Link to="/Terms">Terms</Link>
-          <Link to="/Privacy">Privacy</Link>
-          <Link to="/Cookies">Cookies</Link>
+        <div style={styles.bottomSection} className="footer-bottom">
+          <div style={styles.legalLinks}>
+            <span>© 2026 Tizly</span>
+            <Link to="/Terms" style={styles.link}>Terms</Link>
+            <Link to="/Privacy" style={styles.link}>Privacy</Link>
+            <Link to="/Cookies" style={styles.link}>Cookies</Link>
+          </div>
+          <div style={styles.extraLinks}>
+            <Link to="/Jobs" style={styles.link}>Jobs</Link>
+          </div>
         </div>
-        <div style={styles.extraLinks}>
-          <Link to="/Jobs">Jobs</Link>
-          {/* <Link to="/tags">Tags</Link> */}
-          {/*<Link to="/resources">Resources</Link>*/}
-        </div>
-
-      </div>
 
         <div style={styles.socials}>
           <div style={styles.icon}><SocialIcons.X /></div>
@@ -44,22 +41,18 @@ export default function Footer() {
           <div style={styles.icon}><SocialIcons.Youtube /></div>
         </div>
       </div>
-
-      {/*<hr style={styles.divider} /> */}
-
     </footer>
   );
 }
 
 const styles = {
-  footerContainer: { padding: '30px 8% 10px 8%', backgroundColor: '#fff', borderTop: '1px solid #eee', marginTop: '50px' },
-  topSection: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px', flexWrap: 'wrap', gap: '20px' },
-  logo: { fontSize: '24px', fontWeight: '800' },
-  navLinks: { display: 'flex', gap: '30px', fontWeight: '600', fontSize: '14px' },
+  footerContainer: { padding: '40px 8%', backgroundColor: '#fff', borderTop: '1px solid #eee', marginTop: '60px' },
+  topSection: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '30px' },
+  logo: { fontSize: '28px', fontWeight: '900', color: '#121212', letterSpacing: '-1px' },
   socials: { display: 'flex', gap: '20px' },
-  icon: { cursor: 'pointer', opacity: 0.8 },
-  divider: { border: 'none', borderTop: '1px solid #f0f0f0', marginBottom: '30px' },
-  bottomSection: { display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: '#666', flexWrap: 'wrap', gap: '20px' },
-  legalLinks: { display: 'flex', gap: '20px' },
-  extraLinks: { display: 'flex', gap: '20px', fontWeight: '500' }
+  icon: { cursor: 'pointer', opacity: 0.6, transition: 'opacity 0.2s' },
+  bottomSection: { display: 'flex', gap: '40px', alignItems: 'center', flexWrap: 'wrap' },
+  legalLinks: { display: 'flex', gap: '20px', fontSize: '14px', color: '#666', fontWeight: '600' },
+  extraLinks: { display: 'flex', gap: '20px', fontWeight: '700', fontSize: '14px' },
+  link: { textDecoration: 'none', color: 'inherit' }
 };

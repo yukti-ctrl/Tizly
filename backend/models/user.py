@@ -7,10 +7,9 @@ class User(db.Model):
     firebase_uid = db.Column(db.String(128), unique=True, nullable=False)
     name = db.Column(db.String(100))
     email = db.Column(db.String(120), unique=True, nullable=False)
-    phone = db.Column(db.String(20))
-    address = db.Column(db.Text)
+    # Roles: 'user', 'seller', 'vet'
+    role = db.Column(db.String(20), default='user') 
     photo_url = db.Column(db.String(255))
-    role = db.Column(db.String(20), default='user') # user, admin, vet
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     posts = db.relationship('CommunityPost', backref='author', lazy=True)
