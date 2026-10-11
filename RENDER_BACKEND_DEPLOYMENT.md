@@ -43,7 +43,7 @@ Before deploying, ensure you have:
 | **Root Directory** | `backend` | **Crucial:** isolates the Python project from frontend |
 | **Runtime** | `Python 3` | Render Python environment |
 | **Build Command** | `pip install -r requirements.txt` | Installs Flask, SQLAlchemy, Psycopg, Firebase Admin |
-| **Start Command** | `gunicorn wsgi:app` | Production WSGI application server |
+| **Start Command** | `gunicorn --bind 0.0.0.0:$PORT wsgi:app` | Binds to Render dynamic PORT on all interfaces |
 | **Instance Type** | `Free` | Free tier |
 
 ---
