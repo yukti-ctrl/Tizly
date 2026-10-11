@@ -14,6 +14,9 @@ class Vet(db.Model):
 
     appointments = db.relationship('VetAppointment', backref='vet', lazy=True)
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
 class VetAppointment(db.Model):
     __tablename__ = 'vet_appointments'
     id = db.Column(db.Integer, primary_key=True)
@@ -26,3 +29,6 @@ class VetAppointment(db.Model):
     # status: pending, confirmed, completed, cancelled
     status = db.Column(db.String(20), default='pending')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)

@@ -13,6 +13,9 @@ class CommunityPost(db.Model):
 
     comments = db.relationship('PostComment', backref='post', lazy=True, cascade="all, delete-orphan")
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
 class PostComment(db.Model):
     __tablename__ = 'post_comments'
     id = db.Column(db.Integer, primary_key=True)
@@ -22,3 +25,6 @@ class PostComment(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     commenter = db.relationship('User', backref='comments')
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)

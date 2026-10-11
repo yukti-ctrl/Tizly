@@ -16,3 +16,6 @@ class User(db.Model):
     products = db.relationship('Product', backref='seller', lazy=True)
     vet_profile = db.relationship('Vet', backref='user_account', uselist=False, cascade="all, delete-orphan")
     appointments = db.relationship('VetAppointment', backref='patient_user', lazy=True)
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
