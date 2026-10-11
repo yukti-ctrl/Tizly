@@ -3,6 +3,8 @@ import { auth, googleProvider } from '../firebase/firebaseConfig.js';
 import { 
   onAuthStateChanged, 
   signInWithPopup, 
+  signInWithRedirect,
+  getRedirectResult,
   signOut, 
   signInWithEmailAndPassword, 
   createUserWithEmailAndPassword, 
@@ -68,6 +70,21 @@ export const AuthProvider = ({ children }) => {
   }, [signupRole, adminCode]);
 
   useEffect(() => {
+    // Process redirect result if returning from Google OAuth on mobile
+    getRedirectResult(auth)
+      .then(async (result) => {
+        if (result && result.user) {
+          const pendingRole = sessionStorage.getItem('tizly_auth_role') || 'user';
+          const pendingCode = sessionStorage.getItem('tizly_auth_code') || '';
+          sessionStorage.removeItem('tizly_auth_role');
+          sessionStorage.removeItem('tizly_auth_code');
+          await syncUserWithBackend(result.user, pendingRole, pendingCode);
+        }
+      })
+      .catch((err) => {
+        console.error("Redirect sign-in error:", err);
+      });
+
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         await syncUserWithBackend(firebaseUser);
@@ -82,11 +99,41 @@ export const AuthProvider = ({ children }) => {
   const loginWithGoogle = async (role = 'user', code = '') => {
     setSignupRole(role);
     setAdminCode(code);
-    const result = await signInWithPopup(auth, googleProvider);
-    if (result.user) {
-      await syncUserWithBackend(result.user, role, code);
+
+    // Reliable mobile, touch-device, or small screen detection
+    const isMobile = 
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+      (typeof window !== 'undefined' && window.innerWidth <= 768 && ('ontouchstart' in window || navigator.maxTouchPoints > 0));
+
+    if (isMobile) {
+      // Mobile browsers: redirect flow is far more reliable and avoids popup blockers
+      sessionStorage.setItem('tizly_auth_role', role);
+      sessionStorage.setItem('tizly_auth_code', code);
+      await signInWithRedirect(auth, googleProvider);
+      return;
     }
-    return result;
+
+    // On desktop, attempt popup flow with automatic fallback to redirect if blocked
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      if (result.user) {
+        await syncUserWithBackend(result.user, role, code);
+      }
+      return result;
+    } catch (popupErr) {
+      if (
+        popupErr.code === 'auth/popup-blocked' ||
+        popupErr.code === 'auth/cancelled-popup-request' ||
+        popupErr.code === 'auth/popup-closed-by-user'
+      ) {
+        console.warn("Popup blocked or closed by user, attempting redirect flow...", popupErr);
+        sessionStorage.setItem('tizly_auth_role', role);
+        sessionStorage.setItem('tizly_auth_code', code);
+        await signInWithRedirect(auth, googleProvider);
+        return;
+      }
+      throw popupErr;
+    }
   };
   
   const loginWithEmail = (email, password) => signInWithEmailAndPassword(auth, email, password);

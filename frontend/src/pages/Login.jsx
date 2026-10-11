@@ -33,10 +33,24 @@ export default function Login() {
 
   const handleGoogleLogin = async () => {
     setError("");
+    setLoading(true);
     try {
       await loginWithGoogle();
     } catch (err) {
-      setError("Google sign-in failed.");
+      console.error("Google sign-in error:", err);
+      if (err.code === 'auth/unauthorized-domain') {
+        setError("Domain not authorized: Please add your Netlify site domain in Firebase Console -> Authentication -> Settings -> Authorized Domains.");
+      } else if (err.code === 'auth/popup-blocked') {
+        setError("Popup blocked by browser. Redirecting...");
+      } else if (err.code === 'auth/popup-closed-by-user') {
+        setError("Sign-in cancelled. Please tap 'Continue with Google' again.");
+      } else if (err.code === 'auth/network-request-failed') {
+        setError("Network error. Please check your internet connection and try again.");
+      } else {
+        setError(err.message || "Google sign-in failed. Please try again.");
+      }
+    } finally {
+      setLoading(false);
     }
   };
 

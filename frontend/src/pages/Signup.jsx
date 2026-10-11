@@ -46,6 +46,30 @@ export default function Signup() {
     }
   };
 
+  const handleGoogleSignup = async () => {
+    if (role === 'admin' && !adminCode) return setError("Please enter the Admin Registration Code first.");
+    setError("");
+    setLoading(true);
+    try {
+      await loginWithGoogle(role, adminCode);
+    } catch (err) {
+      console.error("Google sign-up error:", err);
+      if (err.code === 'auth/unauthorized-domain') {
+        setError("Domain not authorized: Please add your Netlify site domain in Firebase Console -> Authentication -> Settings -> Authorized Domains.");
+      } else if (err.code === 'auth/popup-blocked') {
+        setError("Popup blocked by browser. Redirecting...");
+      } else if (err.code === 'auth/popup-closed-by-user') {
+        setError("Sign-up cancelled. Please tap 'Sign up with Google' again.");
+      } else if (err.code === 'auth/network-request-failed') {
+        setError("Network error. Please check your internet connection and try again.");
+      } else {
+        setError(err.message || "Google sign-up failed. Please try again.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const roleDescriptions = {
     user: "Browse the shop, book appointments with doctors, and share moments in the community.",
     seller: "List retail pet products, food, accessories, and engage with pet parents.",
@@ -165,6 +189,15 @@ export default function Signup() {
           </button>
         </form>
 
+        <div style={styles.divider}>
+          <hr style={styles.hr}/> <span>OR</span> <hr style={styles.hr}/>
+        </div>
+
+        <button type="button" onClick={handleGoogleSignup} style={styles.googleBtn} disabled={loading}>
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" width="18"/>
+          Sign up with Google as {role === 'vet' ? 'Doctor' : role.charAt(0).toUpperCase() + role.slice(1)}
+        </button>
+
         <p style={styles.footerText}>
           Already have an account? <Link to="/login" style={styles.link}>Sign in here</Link>
         </p>
@@ -188,6 +221,9 @@ const styles = {
   icon: { position: 'absolute', left: '16px', color: '#888' },
   input: { width: '100%', padding: '14px 14px 14px 46px', borderRadius: '14px', border: '1px solid #e0e0e0', fontSize: '14px', outline: 'none', backgroundColor: '#fafafa', boxSizing: 'border-box' },
   submitBtn: { width: '100%', padding: '14px', borderRadius: '14px', fontSize: '15px', fontWeight: '700', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', marginTop: '6px' },
+  divider: { display: 'flex', alignItems: 'center', gap: '15px', margin: '20px 0' },
+  hr: { flex: 1, border: 'none', borderTop: '1px solid #eee' },
+  googleBtn: { width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', padding: '14px', borderRadius: '14px', border: '1.5px solid #eee', backgroundColor: '#fff', cursor: 'pointer', fontWeight: '700', color: '#121212', fontSize: '14px' },
   footerText: { marginTop: '24px', fontSize: '14px', color: '#666' },
   link: { color: '#121212', fontWeight: '700', textDecoration: 'none' }
 };
