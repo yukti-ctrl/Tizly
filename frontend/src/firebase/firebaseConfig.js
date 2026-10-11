@@ -1,5 +1,11 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider } from "firebase/auth";
+import { 
+  initializeAuth, 
+  browserLocalPersistence, 
+  browserPopupRedirectResolver,
+  indexedDBLocalPersistence,
+  GoogleAuthProvider 
+} from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -11,7 +17,15 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
+
+// Prioritize browserLocalPersistence (localStorage) over IndexedDB.
+// This permanently fixes the mobile Firebase bug "Database is closing/hidden"
+// where mobile browsers close IndexedDB on background/visibilitychange!
+export const auth = initializeAuth(app, {
+  persistence: [browserLocalPersistence, indexedDBLocalPersistence],
+  popupRedirectResolver: browserPopupRedirectResolver
+});
+
 export const googleProvider = new GoogleAuthProvider();
 googleProvider.setCustomParameters({
   prompt: 'select_account'

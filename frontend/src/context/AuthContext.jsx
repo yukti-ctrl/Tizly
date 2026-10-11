@@ -100,26 +100,37 @@ export const AuthProvider = ({ children }) => {
     setSignupRole(role);
     setAdminCode(code);
 
-    try {
-      // Use signInWithPopup directly: works reliably across mobile & desktop
-      // and avoids cross-domain redirect session drops between netlify.app and firebaseapp.com
-      const result = await signInWithPopup(auth, googleProvider);
-      if (result && result.user) {
-        await syncUserWithBackend(result.user, role, code);
-      }
-      return result;
-    } catch (popupErr) {
-      console.warn("signInWithPopup error:", popupErr);
+    const performSignIn = async (attemptsLeft = 2) => {
+      try {
+        const result = await signInWithPopup(auth, googleProvider);
+        if (result && result.user) {
+          await syncUserWithBackend(result.user, role, code);
+        }
+        return result;
+      } catch (err) {
+        console.warn("Google sign-in attempt error:", err);
 
-      // Fallback to redirect only if popup is strictly blocked
-      if (popupErr.code === 'auth/popup-blocked') {
-        sessionStorage.setItem('tizly_auth_role', role);
-        sessionStorage.setItem('tizly_auth_code', code);
-        await signInWithRedirect(auth, googleProvider);
-        return;
+        // If mobile browser temporarily locked IndexedDB on visibilitychange, retry after a tick
+        const isDbClosing = err?.message && /database is closing|closing\/hidden/i.test(err.message);
+        if (isDbClosing && attemptsLeft > 0) {
+          console.warn("Retrying after IndexedDB lock...", err);
+          await new Promise(r => setTimeout(r, 350));
+          return performSignIn(attemptsLeft - 1);
+        }
+
+        // Fallback to redirect only if popup is strictly blocked
+        if (err.code === 'auth/popup-blocked') {
+          sessionStorage.setItem('tizly_auth_role', role);
+          sessionStorage.setItem('tizly_auth_code', code);
+          await signInWithRedirect(auth, googleProvider);
+          return;
+        }
+
+        throw err;
       }
-      throw popupErr;
-    }
+    };
+
+    return performSignIn();
   };
   
   const loginWithEmail = (email, password) => signInWithEmailAndPassword(auth, email, password);

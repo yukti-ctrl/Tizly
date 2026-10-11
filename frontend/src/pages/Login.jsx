@@ -44,6 +44,8 @@ export default function Login() {
         setError("Popup blocked by browser. Redirecting...");
       } else if (err.code === 'auth/popup-closed-by-user') {
         setError("Sign-in cancelled. Please tap 'Continue with Google' again.");
+      } else if (/database is closing|closing\/hidden/i.test(err?.message || '')) {
+        setError("Browser storage busy. Please tap 'Continue with Google' again to connect.");
       } else if (err.code === 'auth/network-request-failed') {
         setError("Network error. Please check your internet connection and try again.");
       } else {
