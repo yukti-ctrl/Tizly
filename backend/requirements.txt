@@ -4,3 +4,7 @@ flask-cors
 flask-migrate
 python-dotenv
 firebase-admin
+psycopg[binary]
+psycopg2-binary
+requests
+gunicorn

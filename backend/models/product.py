@@ -7,11 +7,13 @@ class Product(db.Model):
     name = db.Column(db.String(150), nullable=False)
     description = db.Column(db.Text)
     price = db.Column(db.Float, nullable=False)
-    category = db.Column(db.String(50))
-    stock_qty = db.Column(db.Integer, default=0)
-    image_url = db.Column(db.String(255))
-    rating_avg = db.Column(db.Float, default=0.0)
-    # Track which seller listed the product
+    # Categories include: "Food", "Toys", "Vet Care", "Medical", "Supplies", "Accessories", "Grooming"
+    category = db.Column(db.String(50), default="General")
+    stock_qty = db.Column(db.Integer, default=10)
+    image_url = db.Column(db.Text) # Text to support full Supabase Storage CDN URLs
+    rating_avg = db.Column(db.Float, default=4.8)
+    
+    # Track which user listed the product (admin, seller, or vet)
     seller_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True) 
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 

@@ -2,12 +2,10 @@ import axios from 'axios';
 import { auth } from '../firebase/firebaseConfig';
 
 const api = axios.create({
-  // Use the IP address of your laptop instead of localhost 
-  // so your phone can reach the backend too.
-  baseURL: import.meta.env.VITE_BACKEND_URL || 'http://10.62.247.105:5000',
+  baseURL: import.meta.env.VITE_BACKEND_URL || 'http://127.0.0.1:5000',
 });
 
-// Automatically attach Firebase Token to every request
+// Automatically attach Firebase ID Token to every request when logged in
 api.interceptors.request.use(async (config) => {
   try {
     const user = auth.currentUser;

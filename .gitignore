@@ -18,6 +18,8 @@ backend/firebase-service-account.json
 # Local Database
 backend/tizly.db
 backend/instance/
+backend/supabase_schema.sql
+backend/tizly.db
 
 # --- Frontend (React/Vite) ---
 frontend/node_modules/
