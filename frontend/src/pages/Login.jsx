@@ -120,8 +120,8 @@ export default function Login() {
 }
 
 const styles = {
-  page: { display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '85vh', padding: '20px' },
-  card: { backgroundColor: '#fff', padding: '50px 40px', borderRadius: '40px', boxShadow: '0 15px 50px rgba(0,0,0,0.05)', width: '100%', maxWidth: '450px', textAlign: 'center' },
+  page: { display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '85vh', padding: '15px' },
+  card: { backgroundColor: '#fff', padding: 'clamp(30px, 6vw, 50px) clamp(20px, 5vw, 40px)', borderRadius: '32px', boxShadow: '0 15px 50px rgba(0,0,0,0.05)', width: '100%', maxWidth: '450px', textAlign: 'center' },
   logoBadge: { backgroundColor: '#E9DCC9', color: '#121212', padding: '6px 15px', borderRadius: '50px', display: 'inline-block', fontSize: '12px', fontWeight: '800', marginBottom: '20px' },
   title: { fontSize: '32px', fontWeight: '800', marginBottom: '10px', letterSpacing: '-1px' },
   subtitle: { color: '#666', marginBottom: '30px', fontSize: '15px', lineHeight: '1.5' },

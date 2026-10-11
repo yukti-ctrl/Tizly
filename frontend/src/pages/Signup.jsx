@@ -207,12 +207,12 @@ export default function Signup() {
 }
 
 const styles = {
-  page: { padding: '50px 20px', minHeight: '85vh', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: '#faf9f6' },
-  card: { backgroundColor: '#fff', borderRadius: '32px', padding: '40px', width: '100%', maxWidth: '520px', boxShadow: '0 10px 40px rgba(0,0,0,0.04)', textAlign: 'center' },
+  page: { padding: '30px 15px', minHeight: '85vh', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: '#faf9f6' },
+  card: { backgroundColor: '#fff', borderRadius: '32px', padding: 'clamp(25px, 5vw, 40px) clamp(16px, 4vw, 36px)', width: '100%', maxWidth: '520px', boxShadow: '0 10px 40px rgba(0,0,0,0.04)', textAlign: 'center' },
   logoBadge: { display: 'inline-block', backgroundColor: '#F8F4F0', padding: '6px 14px', borderRadius: '20px', fontSize: '12px', fontWeight: '700', color: '#121212', marginBottom: '16px' },
-  title: { fontSize: '28px', fontWeight: '800', margin: '0 0 8px 0', color: '#121212' },
-  subtitle: { fontSize: '14px', color: '#666', margin: '0 0 24px 0', lineHeight: '1.4' },
-  roleGrid: { display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px', marginBottom: '14px' },
+  title: { fontSize: 'clamp(24px, 5vw, 30px)', fontWeight: '800', margin: '0 0 8px 0', color: '#121212' },
+  subtitle: { fontSize: '14px', color: '#666', margin: '0 0 20px 0', lineHeight: '1.4' },
+  roleGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(70px, 1fr))', gap: '8px', marginBottom: '14px' },
   roleBox: { border: '2px solid', borderRadius: '16px', padding: '14px 6px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', cursor: 'pointer', transition: 'all 0.2s ease' },
   roleDescBox: { backgroundColor: '#f9f9f9', borderRadius: '12px', padding: '10px 14px', fontSize: '12px', color: '#555', textAlign: 'left', marginBottom: '20px', lineHeight: '1.4' },
   error: { backgroundColor: '#ffebee', color: '#c62828', padding: '10px 14px', borderRadius: '12px', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px', textAlign: 'left' },

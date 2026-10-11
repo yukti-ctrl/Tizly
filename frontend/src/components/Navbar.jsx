@@ -21,13 +21,13 @@ export default function Navbar() {
         <div style={styles.navbar}>
           
           <div style={styles.leftSection}>
-            <button onClick={toggleMenu} style={styles.menuToggle}>
+            <button onClick={toggleMenu} className="nav-menu-toggle" aria-label="Toggle navigation menu">
               <Menu size={24} />
             </button>
             <Link to="/" style={styles.logo}>Tizly</Link>
           </div>
           
-          <div style={styles.desktopLinks}>
+          <div className="nav-desktop-links" style={styles.desktopLinks}>
             <Link to="/" style={styles.navLink}>Home</Link>
             <Link to="/shop" style={styles.navLink}>Shop</Link>
             <Link to="/community" style={styles.navLink}>Community</Link>
@@ -114,8 +114,8 @@ const styles = {
   navbar: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: 'rgba(255, 255, 255, 0.95)', backdropFilter: 'blur(10px)', width: '92%', maxWidth: '1200px', padding: '10px 20px', borderRadius: '100px', boxShadow: '0 4px 25px rgba(0,0,0,0.06)' },
   leftSection: { display: 'flex', alignItems: 'center', gap: '10px' },
   logo: { fontSize: '22px', fontWeight: '900', color: '#121212', letterSpacing: '-1px', textDecoration: 'none' },
-  menuToggle: { background: 'none', border: 'none', cursor: 'pointer', display: window.innerWidth > 1024 ? 'none' : 'flex' },
-  desktopLinks: { display: window.innerWidth > 1024 ? 'flex' : 'none', gap: '25px' },
+  menuToggle: { background: 'none', border: 'none', cursor: 'pointer', padding: '4px', color: '#121212', alignItems: 'center', justifyContent: 'center' },
+  desktopLinks: { gap: '25px', alignItems: 'center' },
   navLink: { textDecoration: 'none', color: '#121212', fontWeight: '700', fontSize: '14px', opacity: 0.8 },
   rightSection: { display: 'flex', alignItems: 'center', gap: '15px' },
   cartWrapper: { position: 'relative', display: 'flex', color: '#121212' },

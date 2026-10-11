@@ -169,21 +169,22 @@ const styles = {
     justifyContent: 'center'
   },
   heroContent: { 
-    flex: '1 1 450px', // Base width 450px, can grow/shrink
+    flex: '1 1 450px',
     textAlign: 'left',
-    minWidth: '320px'
+    minWidth: 0,
+    width: '100%'
   },
   title: { 
-    fontSize: 'clamp(32px, 6vw, 64px)', // Responsive font size
+    fontSize: 'clamp(28px, 6vw, 64px)', // Responsive font size
     fontWeight: '900', 
     lineHeight: '1.1', 
-    marginBottom: '24px', 
-    letterSpacing: '-2px' 
+    marginBottom: '20px', 
+    letterSpacing: '-1.5px' 
   },
   subtitle: { 
-    fontSize: 'clamp(16px, 2vw, 18px)', 
+    fontSize: 'clamp(15px, 2vw, 18px)', 
     opacity: 0.7, 
-    marginBottom: '40px', 
+    marginBottom: '30px', 
     lineHeight: '1.6', 
     maxWidth: '550px' 
   },
@@ -196,8 +197,9 @@ const styles = {
     display: 'flex', 
     flexDirection: 'column', 
     alignItems: 'center', 
-    gap: '25px',
-    minWidth: '320px'
+    gap: '20px',
+    minWidth: 0,
+    width: '100%'
   },
   heroImg: { 
     width: '100%', 

@@ -100,33 +100,19 @@ export const AuthProvider = ({ children }) => {
     setSignupRole(role);
     setAdminCode(code);
 
-    // Reliable mobile, touch-device, or small screen detection
-    const isMobile = 
-      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
-      (typeof window !== 'undefined' && window.innerWidth <= 768 && ('ontouchstart' in window || navigator.maxTouchPoints > 0));
-
-    if (isMobile) {
-      // Mobile browsers: redirect flow is far more reliable and avoids popup blockers
-      sessionStorage.setItem('tizly_auth_role', role);
-      sessionStorage.setItem('tizly_auth_code', code);
-      await signInWithRedirect(auth, googleProvider);
-      return;
-    }
-
-    // On desktop, attempt popup flow with automatic fallback to redirect if blocked
     try {
+      // Use signInWithPopup directly: works reliably across mobile & desktop
+      // and avoids cross-domain redirect session drops between netlify.app and firebaseapp.com
       const result = await signInWithPopup(auth, googleProvider);
-      if (result.user) {
+      if (result && result.user) {
         await syncUserWithBackend(result.user, role, code);
       }
       return result;
     } catch (popupErr) {
-      if (
-        popupErr.code === 'auth/popup-blocked' ||
-        popupErr.code === 'auth/cancelled-popup-request' ||
-        popupErr.code === 'auth/popup-closed-by-user'
-      ) {
-        console.warn("Popup blocked or closed by user, attempting redirect flow...", popupErr);
+      console.warn("signInWithPopup error:", popupErr);
+
+      // Fallback to redirect only if popup is strictly blocked
+      if (popupErr.code === 'auth/popup-blocked') {
         sessionStorage.setItem('tizly_auth_role', role);
         sessionStorage.setItem('tizly_auth_code', code);
         await signInWithRedirect(auth, googleProvider);
