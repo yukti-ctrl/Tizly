@@ -1,43 +1,114 @@
-# --- Root & OS Files ---
+# ==============================================================================
+# Tizly Git Ignore Configuration
+# ==============================================================================
+
+# --- Operating System & Editor Files ---
 .DS_Store
+.DS_Store?
+._*
 Thumbs.db
+ehthumbs.db
+desktop.ini
 *.swp
-*.log
+*.swo
+*~
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
 
-# --- Backend (Python/Flask) ---
-backend/__pycache__/
-backend/*.pyc
+# --- Python & Bytecode (Caches everywhere) ---
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+.pytest_cache/
+.mypy_cache/
+
+# --- Virtual Environments ---
+.venv/
+**/.venv/
+venv/
+**/venv/
+env/
+**/env/
+ENV/
+env.bak/
+venv.bak/
+
+# --- Environment Variables & Sensitive Credentials (CRITICAL) ---
+.env
+.env.*
+!.env.example
+!.env.production
+*.env
 backend/.env
-backend/.venv/
-backend/venv/
-backend/env/
-
-# Firebase Service Account (CRITICAL: Do not commit this)
-backend/firebase-service-account.json
-
-# Local Database
-backend/tizly.db
-backend/instance/
-backend/supabase_schema.sql
-backend/tizly.db
-
-# --- Frontend (React/Vite) ---
-frontend/node_modules/
-frontend/dist/
-frontend/build/
 frontend/.env
 frontend/.env.local
 frontend/.env.development.local
 frontend/.env.test.local
 frontend/.env.production.local
 
-# Vite Cache
-frontend/.vite/
-
-# npm/yarn logs
-frontend/npm-debug.log*
-frontend/yarn-debug.log*
-frontend/yarn-error.log*
-
+# Firebase Service Account Keys & Secrets
+*firebase-service-account*.json
 firebase-service-account.json
+backend/firebase-service-account.json
+*.pem
+*.key
+*.cert
+*.pfx
+
+# --- Local Databases & Transient Instance Storage ---
+*.sqlite
+*.sqlite3
+*.db
+backend/tizly.db
+backend/instance/
+instance/
+**/instance/
+
+# --- Node / Frontend (React / Vite) ---
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+build/
+**/build/
+.vite/
+**/.vite/
+*.local
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Compressed Archives & Temporary Notes
+*.zip
+*.tar.gz
+*.rar
+frontend/src.zip
 changes.md
