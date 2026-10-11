@@ -32,7 +32,8 @@ export default function ImageUploader({ value, onChange, folder = 'products', la
       let returnedUrl = res.data.url;
       // If local fallback was used (/static/uploads/...), ensure full URL
       if (returnedUrl.startsWith('/')) {
-        const backendBase = import.meta.env.VITE_BACKEND_URL || 'http://127.0.0.1:5000';
+        const rawBase = import.meta.env.VITE_BACKEND_URL || (import.meta.env.PROD ? 'https://tizly.onrender.com' : 'http://127.0.0.1:5000');
+        const backendBase = String(rawBase).trim().replace(/\/+$/, '');
         returnedUrl = `${backendBase}${returnedUrl}`;
       }
 
